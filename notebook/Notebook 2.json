@@ -1,0 +1,82 @@
+{
+	"name": "Notebook 2",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "ASparkpool",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "3897ab6a-4558-49f3-995e-7d899e539abe"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/4818d79e-8a7e-4161-80f4-e991838c2b3d/resourceGroups/Rs-Synapsegroup/providers/Microsoft.Synapse/workspaces/mysynapsespace203/bigDataPools/ASparkpool",
+				"name": "ASparkpool",
+				"type": "Spark",
+				"endpoint": "https://mysynapsespace203.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ASparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\n",
+					"blob_account_name = \"azureopendatastorage\"\n",
+					"blob_container_name = \"nyctlc\"\n",
+					"blob_relative_path = \"fhv\"\n",
+					"blob_sas_token = r\"\"\n",
+					"# Allow SPARK to read from Blob remotely\n",
+					"wasbs_path = 'wasbs://%s@%s.blob.core.windows.net/%s' % (blob_container_name, blob_account_name, blob_relative_path)\n",
+					"\n",
+					"spark.conf.set(\n",
+					"    'fs.azure.sas.%s.%s.blob.core.windows.net' % (blob_container_name, blob_account_name),\n",
+					"    blob_sas_token)\n",
+					"df = spark.read.parquet(wasbs_path)\n",
+					"df.write.mode(\"overwrite\").saveAsTable(\"default.TempTable\")"
+				],
+				"execution_count": 2
+			}
+		]
+	}
+}
